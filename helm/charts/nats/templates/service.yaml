@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "nats.fullname" . }}
+  name: {{ tpl .Values.service.serviceName . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "nats.labels" . | nindent 4 }}
@@ -15,11 +15,14 @@ metadata:
 spec:
   selector:
     {{- include "nats.selectorLabels" . | nindent 4 }}
+  {{ if ne (.Values.service.type) ("NodePort") }}
   clusterIP: None
+  {{ end }}
   {{- if .Values.topologyKeys }}
   topologyKeys:
      {{- .Values.topologyKeys | toYaml | nindent 4 }}
   {{- end }}
+  type: {{ .Values.service.type }}
   ports:
   {{- if .Values.websocket.enabled }}
   - name: websocket
@@ -30,16 +33,25 @@ spec:
   {{- end }}
   - name: client
     port: 4222
+    {{ if .Values.service.client.nodePort }}
+    nodePort: {{ .Values.service.client.nodePort }}
+    {{ end }}
     {{- if .Values.appProtocol.enabled }}
     appProtocol: tcp
     {{- end }}
   - name: cluster
     port: 6222
+    {{ if .Values.service.cluster.nodePort }}
+    nodePort: {{ .Values.service.cluster.nodePort }}
+    {{ end }}
     {{- if .Values.appProtocol.enabled }}
     appProtocol: tcp
     {{- end }}
   - name: monitor
     port: 8222
+    {{ if .Values.service.monitoring.nodePort }}
+    nodePort: {{ .Values.service.monitoring.nodePort }}
+    {{ end }}
     {{- if .Values.appProtocol.enabled }}
     appProtocol: http
     {{- end }}
