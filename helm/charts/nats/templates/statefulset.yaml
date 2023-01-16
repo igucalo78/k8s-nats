@@ -36,7 +36,7 @@ spec:
       {{- end }}
       {{- end }}
       labels:
-        {{- include "nats.selectorLabels" . | nindent 8 }}
+        {{- include "nats.labels" . | nindent 8 }}
     spec:
 {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -50,6 +50,15 @@ spec:
       affinity:
 {{- tpl (toYaml .) $ | nindent 8 }}
 {{- end }}
+      {{- if or (.Values.nodeSelector) (eq (tpl .Values.draxNodeSelectorEnabled .) "true") }}
+      nodeSelector:
+        {{ if .Values.nodeSelector }}
+          {{- toYaml .Values.nodeSelector | nindent 8 }}
+        {{ end }}
+        {{ if eq (tpl .Values.draxNodeSelectorEnabled .) "true" }}
+          {{- tpl (toYaml .Values.draxNodeSelector) $ | nindent 8 }}
+        {{ end }}
+      {{- end }}
 {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints:
       {{- range .Values.topologySpreadConstraints }}
