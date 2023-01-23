@@ -416,7 +416,7 @@ data:
     websocket {
       port: {{ .Values.websocket.port }}
       {{- with .Values.websocket.tls }}
-        {{ $secretName := tpl .secret.name $ }}
+        {{ $secretName := .secret.name }}
         tls {
         {{- with .cert }}
         cert_file: /etc/nats-certs/ws/{{ $secretName }}/{{ . }}
