@@ -44,10 +44,7 @@ spec:
       {{- end }}
       {{- end }}
       labels:
-        {{- include "nats.selectorLabels" . | nindent 8 }}
-        {{- if .Values.statefulSetPodLabels }}
-        {{- tpl (toYaml .Values.statefulSetPodLabels) . | nindent 8 }}
-        {{- end }}
+        {{- include "nats.labels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -59,15 +56,18 @@ spec:
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
-        {{- tpl (toYaml .) $ | nindent 8 }}
+{{- tpl (toYaml .) $ | nindent 8 }}
+{{- end }}
+      {{- if or (.Values.nodeSelector) (eq (tpl .Values.draxNodeSelectorEnabled .) "true") }}
+      nodeSelector:
+        {{ if .Values.nodeSelector }}
+          {{- toYaml .Values.nodeSelector | nindent 8 }}
+        {{ end }}
+        {{ if eq (tpl .Values.draxNodeSelectorEnabled .) "true" }}
+          {{- tpl (toYaml .Values.draxNodeSelector) $ | nindent 8 }}
+        {{ end }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector: {{ toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations: {{ toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if .Values.topologySpreadConstraints }}
+{{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints:
       {{- range .Values.topologySpreadConstraints }}
       {{- if and .maxSkew .topologyKey }}

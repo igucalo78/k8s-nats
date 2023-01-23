@@ -43,6 +43,10 @@ helm.sh/chart: {{ include "nats.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+drax/role: drax-core
+drax/name: Nats
+drax/component-name: {{ .Chart.Name }}
+drax/component-version: {{ .Chart.Version }}
 {{- end }}
 
 {{/*

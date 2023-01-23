@@ -295,6 +295,24 @@ nats:
   #   cert: "tls.crt"
   #   key: "tls.key"
 
+service:
+  serviceName: "nats-service"
+  type: NodePort
+  client:
+    name: "natsclient"
+#    nodePort: 31000
+  cluster:
+    name: "natscluster"
+#    nodePort: 31001
+  monitoring:
+    name: "natsmonitoring"
+#    nodePort: 31002
+
+draxNodeSelectorEnabled: "false"
+
+draxNodeSelector:
+  draxName: "main"
+
 mqtt:
   enabled: false
   ackWait: 1m
